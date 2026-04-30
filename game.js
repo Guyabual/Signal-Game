@@ -129,9 +129,9 @@ const LEVEL_TITLES = [
 
 const DIFFICULTY_SCALING = {
   base: 1,
-  growthPerLevel: 0.08,
-  maxScale: 1.85,
-  extraObstacleStartLevel: 4,
+  growthPerLevel: 0.06,
+  maxScale: 1.6,
+  extraObstacleStartLevel: 6,
 };
 
 const colors = {
@@ -398,34 +398,36 @@ function addExtraObstaclesForScaling(level, levelIndex) {
     return;
   }
   const intensity = levelIndex - DIFFICULTY_SCALING.extraObstacleStartLevel + 1;
-  const centerX = Math.max(520, level.finishX - 900);
+  const centerX = Math.max(620, level.finishX - 760);
 
   level.lasers.push({
     x: centerX,
-    y: 260,
+    y: 275,
     w: 14,
-    h: 210,
-    interval: Math.max(0.55, 1 - intensity * 0.06),
-    onDuration: 0.42,
+    h: 195,
+    interval: Math.max(0.62, 1.08 - intensity * 0.04),
+    onDuration: 0.36,
     phase: 0.15 * intensity,
   });
 
   level.fireballs.push({
-    x: centerX + 180,
-    y: 170,
-    r: 14 + Math.min(6, intensity),
-    baseY: 170,
-    amplitude: 105 + intensity * 8,
-    speed: 2 + intensity * 0.16,
+    x: centerX + 160,
+    y: 175,
+    r: 13 + Math.min(5, intensity),
+    baseY: 175,
+    amplitude: 95 + intensity * 6,
+    speed: 1.9 + intensity * 0.12,
     phase: 0.22 * intensity,
   });
 
-  level.spikes.push({
-    x: centerX + 320,
-    y: FLOOR_Y - 22,
-    w: 46 + intensity * 7,
-    h: 22,
-  });
+  if (intensity > 1) {
+    level.spikes.push({
+      x: centerX + 315,
+      y: FLOOR_Y - 22,
+      w: 40 + intensity * 5,
+      h: 22,
+    });
+  }
 }
 
 function ensureTenLevels() {
@@ -469,6 +471,22 @@ function ensureTenLevels() {
       }
     }
   }
+
+  const level5 = LEVELS[4];
+  if (level5) {
+    level5.movingPlatforms = level5.movingPlatforms.map((mp) => ({
+      ...mp,
+      w: Math.max(mp.w, 145),
+      speed: Math.min(mp.speed, 1.7),
+      amplitude: Math.min(mp.amplitude, 62),
+    }));
+    level5.lasers = level5.lasers.map((laser) => ({
+      ...laser,
+      interval: Math.max(0.82, laser.interval),
+      onDuration: Math.min(0.42, laser.onDuration),
+    }));
+    level5.spikes = level5.spikes.filter((spike) => spike.x < level5.finishX - 420);
+  }
 }
 
 ensureTenLevels();
@@ -492,6 +510,8 @@ const state = {
   totalDeaths: 0,
   bestTimes: Array(LEVELS.length).fill(null),
   checkpointX: null,
+  checkpointMap: {},
+  respawnGrace: 0,
   coinsTotal: 0,
   coinsInLevel: 0,
   lives: 3,
@@ -585,16 +605,35 @@ function isLaserOn(laser, t, scale = 1) {
 function getRuntimePlatforms(level, t) {
   const platforms = [...level.platforms];
   for (const mp of level.movingPlatforms) {
-    const offset = Math.sin(t * mp.speed + mp.phase) * mp.amplitude;
+    const phase = t * mp.speed + mp.phase;
+    const offset = Math.sin(phase) * mp.amplitude;
+    const velocity = Math.cos(phase) * mp.amplitude * mp.speed;
     platforms.push({
       x: mp.axis === "x" ? mp.x + offset : mp.x,
       y: mp.axis === "y" ? mp.y + offset : mp.y,
       w: mp.w,
       h: mp.h,
       moving: true,
+      vx: mp.axis === "x" ? velocity : 0,
+      vy: mp.axis === "y" ? velocity : 0,
     });
   }
   return platforms;
+}
+
+function getRuntimeMovingPlatforms(level, t) {
+  const items = [];
+  for (const mp of level.movingPlatforms) {
+    const phase = t * mp.speed + mp.phase;
+    const offset = Math.sin(phase) * mp.amplitude;
+    items.push({
+      x: mp.axis === "x" ? mp.x + offset : mp.x,
+      y: mp.axis === "y" ? mp.y + offset : mp.y,
+      w: mp.w,
+      h: mp.h,
+    });
+  }
+  return items;
 }
 
 function getPlayerCircle() {
@@ -641,14 +680,13 @@ function chooseSafeSpawnX(level) {
   let candidate = preferred;
   const spawnY = FLOOR_Y - PLAYER_RADIUS * 2;
 
-  for (let i = 0; i < 16; i += 1) {
+  for (let i = 0; i < 26; i += 1) {
     if (!isUnsafeSpawn(level, candidate, spawnY)) {
       return candidate;
     }
-    candidate -= 65;
-    if (candidate < 20) {
-      candidate = level.startX;
-    }
+    const dir = i % 2 === 0 ? -1 : 1;
+    const step = 58 + Math.floor(i / 2) * 12;
+    candidate = Math.max(20, Math.min(level.width - 80, preferred + dir * step));
   }
 
   return level.startX;
@@ -662,6 +700,7 @@ function resetPlayerPosition() {
   state.player.vx = 0;
   state.player.vy = 0;
   state.player.onGround = false;
+  state.respawnGrace = 0.75;
 }
 
 function enterMainMenu() {
@@ -680,6 +719,7 @@ function startLevel(index) {
   state.levelDeaths = 0;
   state.coinsInLevel = 0;
   state.checkpointX = null;
+  state.checkpointMap = {};
   state.lives = state.maxLives;
 
   const level = getLevel();
@@ -739,12 +779,19 @@ function update(dt) {
     return;
   }
 
+  if (state.respawnGrace > 0) {
+    state.respawnGrace = Math.max(0, state.respawnGrace - dt);
+  }
+
   state.time += dt;
   const level = getLevel();
   const scale = getDifficultyScale(state.levelIndex);
   const p = state.player;
   const prevY = p.y;
+  const prevMovingPlatforms = getRuntimeMovingPlatforms(level, Math.max(0, state.time - dt));
   const platforms = getRuntimePlatforms(level, state.time);
+  const nowMovingPlatforms = getRuntimeMovingPlatforms(level, state.time);
+  let groundedPlatform = null;
 
   p.vx = 0;
   if (input.left) {
@@ -793,9 +840,24 @@ function update(dt) {
       p.y = plat.y - p.h;
       p.vy = 0;
       p.onGround = true;
+      groundedPlatform = plat;
     } else if (p.vy < 0 && fromBelow) {
       p.y = plat.y + plat.h;
       p.vy = 0;
+    }
+  }
+
+  if (p.onGround && groundedPlatform?.moving) {
+    const matchIdx = nowMovingPlatforms.findIndex(
+      (mp) =>
+        Math.abs(mp.x - groundedPlatform.x) < 0.001 &&
+        Math.abs(mp.y - groundedPlatform.y) < 0.001 &&
+        mp.w === groundedPlatform.w &&
+        mp.h === groundedPlatform.h
+    );
+    if (matchIdx >= 0) {
+      p.x += nowMovingPlatforms[matchIdx].x - prevMovingPlatforms[matchIdx].x;
+      p.y += nowMovingPlatforms[matchIdx].y - prevMovingPlatforms[matchIdx].y;
     }
   }
 
@@ -806,8 +868,10 @@ function update(dt) {
     return;
   }
 
+  const canTakeDamage = state.respawnGrace <= 0;
+
   for (const laser of level.lasers) {
-    if (isLaserOn(laser, state.time, scale) && aabb(p, laser)) {
+    if (canTakeDamage && isLaserOn(laser, state.time, scale) && aabb(p, laser)) {
       playSfx("hit", 0.5);
       loseLifeAndRespawn();
       return;
@@ -815,7 +879,7 @@ function update(dt) {
   }
 
   for (const spike of level.spikes) {
-    if (aabb(p, spike)) {
+    if (canTakeDamage && aabb(p, spike)) {
       playSfx("hit", 0.5);
       loseLifeAndRespawn();
       return;
@@ -824,7 +888,7 @@ function update(dt) {
 
   for (const fireball of level.fireballs) {
     const fireY = fireball.baseY + Math.sin(state.time * fireball.speed * scale + fireball.phase) * fireball.amplitude;
-    if (circleRectCollision({ x: fireball.x, y: fireY, r: fireball.r }, p)) {
+    if (canTakeDamage && circleRectCollision({ x: fireball.x, y: fireY, r: fireball.r }, p)) {
       playSfx("hit", 0.5);
       loseLifeAndRespawn();
       return;
@@ -834,7 +898,7 @@ function update(dt) {
   if (level.boss && !level.boss.defeated && p.x >= level.boss.activeAfterX) {
     const bossY = level.boss.baseY + Math.sin(state.time * level.boss.speed * scale + level.boss.phase) * level.boss.amplitude;
     const hitsBoss = circleRectCollision({ x: level.boss.x, y: bossY, r: level.boss.radius }, p);
-    if (hitsBoss) {
+    if (canTakeDamage && hitsBoss) {
       const playerBottom = p.y + p.h;
       const stomped = p.vy > 110 && playerBottom < bossY + level.boss.radius * 0.35;
       if (stomped && level.boss.health > 0) {
@@ -854,16 +918,21 @@ function update(dt) {
     const beamLeft = level.boss.x - level.boss.attackWidth * 0.5;
     const beamRight = level.boss.x + level.boss.attackWidth * 0.5;
     const pulseOn = Math.sin(state.time * (5 + (scale - 1) * 1.5)) > 0.15;
-    if (pulseOn && p.x + p.w > beamLeft && p.x < beamRight && p.y + p.h > FLOOR_Y - 140) {
+    if (canTakeDamage && pulseOn && p.x + p.w > beamLeft && p.x < beamRight && p.y + p.h > FLOOR_Y - 140) {
       playSfx("hit", 0.5);
       loseLifeAndRespawn();
       return;
     }
   }
 
-  for (const cp of level.checkpoints) {
+  for (let i = 0; i < level.checkpoints.length; i += 1) {
+    const cp = level.checkpoints[i];
     if (p.x > cp && (state.checkpointX === null || cp > state.checkpointX)) {
       state.checkpointX = cp;
+      if (!state.checkpointMap[i]) {
+        state.checkpointMap[i] = true;
+        state.lives = Math.min(state.maxLives, state.lives + 1);
+      }
       playSfx("checkpoint", 0.52);
     }
   }
@@ -947,12 +1016,12 @@ function drawFireball(fireball) {
   ctx.fill();
   ctx.restore();
 
-  ctx.fillStyle = colors.fireball;
+  ctx.fillStyle = "#ff3a2d";
   ctx.beginPath();
   ctx.arc(x, y, fireball.r, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#ffd08a";
+  ctx.fillStyle = "#ff9f78";
   ctx.beginPath();
   ctx.arc(x - fireball.r * 0.2, y - fireball.r * 0.25, fireball.r * 0.42, 0, Math.PI * 2);
   ctx.fill();
@@ -1071,9 +1140,15 @@ function drawWorld() {
     drawCoin(level.coins[i], level.coinsCollected[i]);
   }
 
-  for (const cpX of level.checkpoints) {
-    ctx.fillStyle = cpX <= (state.checkpointX ?? -1) ? "#ffe889" : colors.checkpoint;
+  for (let i = 0; i < level.checkpoints.length; i += 1) {
+    const cpX = level.checkpoints[i];
+    const active = Boolean(state.checkpointMap[i]);
+    ctx.fillStyle = active ? "#f7ff8e" : colors.checkpoint;
     ctx.fillRect(cpX - camX, 280, 8, 190);
+    if (active) {
+      ctx.fillStyle = "rgba(247, 255, 142, 0.35)";
+      ctx.fillRect(cpX - camX - 5, 250, 18, 220);
+    }
   }
 
   drawComputer(level);
@@ -1086,18 +1161,18 @@ function drawSignalPlayer() {
 
   ctx.save();
   ctx.globalAlpha = 0.24;
-  ctx.fillStyle = "#ff9a4a";
+  ctx.fillStyle = "#fff86a";
   ctx.beginPath();
   ctx.arc(cx, cy, PLAYER_RADIUS + 11, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 
-  ctx.fillStyle = "#ff7f2a";
+  ctx.fillStyle = "#ffe34f";
   ctx.beginPath();
   ctx.arc(cx, cy, PLAYER_RADIUS, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#ffd08a";
+  ctx.fillStyle = "#fff7b8";
   ctx.beginPath();
   ctx.arc(cx - 5, cy - 5, PLAYER_RADIUS * 0.42, 0, Math.PI * 2);
   ctx.fill();
@@ -1215,17 +1290,18 @@ function drawHUD() {
   ctx.fillText(`Time: ${state.time.toFixed(1)}s`, 16, 52);
   ctx.fillText(`Lives: ${state.lives}/${state.maxLives}`, 16, 76);
   ctx.fillText(`Coins: ${state.coinsInLevel}/${level.coins.length} (Total ${state.coinsTotal})`, 16, 100);
+  ctx.fillText(`Checkpoint Charge: +1 life`, 16, 124);
 
   const best = state.bestTimes[state.levelIndex];
   if (best !== null) {
-    ctx.fillText(`Best: ${best.toFixed(1)}s`, 16, 124);
+    ctx.fillText(`Best: ${best.toFixed(1)}s`, 16, 148);
   }
-  ctx.fillText(`Difficulty: x${scale.toFixed(2)}`, 16, best !== null ? 148 : 124);
+  ctx.fillText(`Difficulty: x${scale.toFixed(2)}`, 16, best !== null ? 172 : 148);
   if (level.boss?.maxHealth) {
     const hpText = level.boss.defeated
       ? "Boss Core: Neutralized"
       : `Boss Core: ${Math.max(0, level.boss.health)}/${level.boss.maxHealth}`;
-    ctx.fillText(hpText, 16, best !== null ? 172 : 148);
+    ctx.fillText(hpText, 16, best !== null ? 196 : 172);
   }
 }
 
