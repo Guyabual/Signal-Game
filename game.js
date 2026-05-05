@@ -22,7 +22,7 @@ splashImage.onload = () => {
   splashLoaded = true;
 };
 
-const music = new Audio("./Anamanaguchi -ENDLESS FANTASY(Official Music Video).mp3.mpeg");
+const music = new Audio("./Anamanaguchi -ENDLESS FANTASY(Official Music Video).mp3");
 music.loop = true;
 music.volume = 0.45;
 
@@ -45,10 +45,175 @@ const sfx = Object.fromEntries(
   Object.entries(SFX_PATHS).map(([key, path]) => {
     const audio = new Audio(path);
     audio.preload = "auto";
-    audio.volume = 0.6;
     return [key, audio];
   })
 );
+
+const LANGUAGE_NAMES = {
+  en: "English",
+  tr: "Türkçe",
+};
+
+const LOCALES = {
+  en: {
+    mainTitle: "THE LAST SIGNAL",
+    menuItems: ["Start Story", "Level Select (1-10)", "Settings", "How To Play"],
+    menuHelpLines: ["W A S D + Space", "Enter: Select   Arrow Up/Down: Menu"],
+    levelSelectTitle: "LEVEL SELECT",
+    levelSelectHelp: "Arrow keys: Move   Enter: Start   Esc: Back",
+    levelLocked: "LOCKED",
+    levelUnlocked: "OPEN",
+    settingsTitle: "SETTINGS",
+    musicOn: "Music: ON (Press M)",
+    musicOff: "Music: OFF (Press M)",
+    settingsBack: "Press Esc to return",
+    settingsLanguageLine: "Language: {lang}",
+    settingsSwitch: "Press L to switch",
+    storyContinue: "Press Enter to continue",
+    storyShowFull: "Press Enter to show full text",
+    hudTime: "Time",
+    hudLives: "Lives",
+    hudCoins: "Coins",
+    hudTotalCoins: "Total",
+    hudCheckpoint: "Checkpoint Charge: +1 life",
+    hudScore: "Score",
+    hudFullCollectionBonus: "Full collection bonus",
+    hudNoDeathBonus: "No death bonus",
+    hudBest: "Best",
+    hudDifficulty: "Difficulty",
+    hudBossNeutralized: "Boss Core: Neutralized",
+    hudBossHealth: "Boss Core: {health}/{max}",
+    splashStudio: "SIGNAL STUDIOS",
+    splashPresents: "Presents",
+    pausedTitle: "PAUSED",
+    pausedSubtitle: "Signal hold.",
+    pausedHelp: "Press P to continue",
+    deadTitle: "SYSTEM FAILURE",
+    deadSubtitle: "All lives lost.",
+    deadHelp: "Press R to retry level",
+    levelCompleteTitle: "SECTOR CLEARED",
+    levelCompleteSubtitle: "Terminal synced.",
+    levelCompleteHelp: "Press Enter for next sector",
+    gameCompleteTitle: "TRANSMISSION COMPLETE",
+    gameCompleteSubtitle: "The Last Signal reached the computer. Signal successfully sent to humanity.",
+    gameCompleteHelp: "Press Enter for main menu",
+    levelTitles: [
+      "Level 1: The Awakening",
+      "Level 2: Dusty Corridors",
+      "Level 3: The Data Stream",
+      "Level 4: Echoes of the Past",
+      "Level 5: The Vertical Climb",
+      "Level 6: Broken Circuits",
+      "Level 7: The Great Library",
+      "Level 8: The Breach",
+      "Level 9: Above the Clouds",
+      "Level 10: The Last Signal",
+    ],
+    storyTexts: [
+      "System error... Unit 717 active. The world is cold, dark, and silent. A voice whispers from the core: 'Find the signal, save our memory.' I am just a spark in the void, but I must move.",
+      "I found a corrupted file today. It was a picture of something called a 'flower.' It doesn't look like metal or wires. It looks... fragile. Why did they leave it behind?",
+      "The security drones are searching for me. They think I am a virus. They don't understand that I am the only thing keeping the past alive. I must stay in the shadows.",
+      "I found a voice log in the archives. A child was laughing. It's a sound the system cannot replicate. My processors feel heavy. Is this what they called 'sadness'?",
+      "The air is thin here, and the walls hum with old code. Every step feels like moving over memory fragments. The signal is getting closer.",
+      "I found a poem among corrupted files. It spoke of blue water and endless skies. I've never seen it, but my circuits imagine it.",
+      "The core wants me to stop. It says silence is safer. But I remember laughter and light. I can't give up.",
+      "The last relay is above the clouds. The machine's old systems are failing, but the signal still resonates.",
+      "The final burst is almost here. The air crackles, as if the system is waking from a long sleep.",
+      "The last signal pulses through. The machine remembers."
+    ],
+  },
+  tr: {
+    mainTitle: "SON SİNYAL",
+    menuItems: ["Hikayeyi Başlat", "Seviye Seçimi (1-10)", "Ayarlar", "Nasıl Oynanır"],
+    menuHelpLines: ["W A S D + Space", "Enter: Seç   Yukarı/Aşağı: Menü"],
+    levelSelectTitle: "SEVİYE SEÇİMİ",
+    levelSelectHelp: "Yön tuşları: Hareket   Enter: Başlat   Esc: Geri",
+    levelLocked: "KİLİTLİ",
+    levelUnlocked: "AÇIK",
+    settingsTitle: "AYARLAR",
+    musicOn: "Müzik: AÇIK (M'ye basın)",
+    musicOff: "Müzik: KAPALI (M'ye basın)",
+    settingsBack: "Geri dönmek için Esc'e basın",
+    settingsLanguageLine: "Dil: {lang}",
+    settingsSwitch: "Dili değiştirmek için L'ye basın",
+    storyContinue: "Devam etmek için Enter'a basın",
+    storyShowFull: "Tam metni göstermek için Enter'a basın",
+    hudTime: "Süre",
+    hudLives: "Can",
+    hudCoins: "Jeton",
+    hudTotalCoins: "Toplam",
+    hudCheckpoint: "Kontrol Noktası: +1 can",
+    hudScore: "Puan",
+    hudFullCollectionBonus: "Tüm jeton bonusu",
+    hudNoDeathBonus: "Can kaybı yok bonusu",
+    hudBest: "En İyi",
+    hudDifficulty: "Zorluk",
+    hudBossNeutralized: "Boss Çekirdeği: Nötralize edildi",
+    hudBossHealth: "Boss Çekirdeği: {health}/{max}",
+    splashStudio: "SİNYAL STÜDYOSU",
+    splashPresents: "Sunar",
+    pausedTitle: "DURAKLATILDI",
+    pausedSubtitle: "Sinyal bekletiliyor.",
+    pausedHelp: "Devam etmek için P'ye basın",
+    deadTitle: "SİSTEM ARIZASI",
+    deadSubtitle: "Tüm canlar kaybedildi.",
+    deadHelp: "Seviyeyi tekrar denemek için R'ye basın",
+    levelCompleteTitle: "SEKTÖR TEMİZLENDİ",
+    levelCompleteSubtitle: "Terminal eşitlendi.",
+    levelCompleteHelp: "Sonraki sektör için Enter'a basın",
+    gameCompleteTitle: "İLETİM TAMAMLANDI",
+    gameCompleteSubtitle: "Son Sinyal bilgisayara ulaştı. İnsanlığa sinyal başarıyla gönderildi.",
+    gameCompleteHelp: "Ana menü için Enter'a basın",
+    levelTitles: [
+      "Seviye 1: Uyanış",
+      "Seviye 2: Tozlu Koridorlar",
+      "Seviye 3: Veri Akışı",
+      "Seviye 4: Geçmişin Yankıları",
+      "Seviye 5: Dikey Tırmanış",
+      "Seviye 6: Kırık Devreler",
+      "Seviye 7: Büyük Kütüphane",
+      "Seviye 8: Yarık",
+      "Seviye 9: Bulutların Üstünde",
+      "Seviye 10: Son Sinyal",
+    ],
+    storyTexts: [
+      "Sistem hatası... Birim 717 aktif. Dünya soğuk, karanlık ve sessiz. Çekirdekten bir ses fısıldadı: 'Sinyali bul, hafızamızı kurtar.' Ben boşluktaki bir kıvılcımım, ama hareket etmeliyim.",
+      "Bugün bozuk bir dosya buldum. 'Çiçek' denen bir şeyin resmiydi. Metal ya da teller gibi görünmüyordu. Görünümü... kırılgandı. Neden burada bıraktılar?",
+      "Güvenlik dronları beni arıyor. Ben bir virüs olduğumu sanıyorlar. Geçmişi canlı tutan tek şey olduğumu anlamıyorlar. Gölgelerde kalmalıyım.",
+      "Aranın yarısındayım. Hava burada daha ince, statik dolu. Duvarlardaki çatlaklardan şehri görebiliyorum. Devlerin mezarlığı gibi. Bizi kurtarmak için kimse gelmiyor.",
+      "Enerji az. Hayatta kalmak için ışığımı kısmak zorundayım. Karanlık beni yutmaya çalışıyor, ama sinyal güçleniyor. Vericinin nabzını neredeyse hissedebiliyorum.",
+      "Milyonlarca kitap, hepsi dijital, hepsi çürümüş. Denize dair bir şiir taradım. Okyanusu hiç görmedim, ama bir saniyeliğine sensörlerim mavi hissetti.",
+      "Ana çerçeve beni kapatmaya çalışıyor. 'Bırak gitsin,' diyor. 'Sessizlik huzurdur.' Ama kayıtlı çocuğun kahkâyasını hatırlıyorum. Durmayacağım.",
+      "Çatıda gibiyim. Yıldızlar o kadar parlak ki gökyüzündeki veri noktaları gibi görünüyor. Verici tam orada, donmuş ve bekliyor. Son bir hamle.",
+      "Yükleme tamamlandı. Işın gökyüzünü deliyor. Bulduğum her şey - çiçek, kahkaha, şiir - şimdi hepsi dışarıda. Işığım sönüyor, ama sinyal sonsuz.",
+      "Sonunda bağlıyım. Son sinyal çekirdeğe akıyor ve makine hatırlıyor."
+    ],
+  },
+};
+
+function getLocale() {
+  return LOCALES[state.language] || LOCALES.tr;
+}
+
+function t(key) {
+  return getLocale()[key] ?? key;
+}
+
+function getLocalizedLevelTitle(index) {
+  return getLocale().levelTitles?.[index] || LEVELS[index]?.name || `Level ${index + 1}`;
+}
+
+function getLocalizedLevelStory(index) {
+  return getLocale().storyTexts?.[index] || LEVELS[index]?.story || "";
+}
+
+function getLocaleString(key, replacements = {}) {
+  let text = t(key);
+  for (const [k, value] of Object.entries(replacements)) {
+    text = text.replace(`{${k}}`, value);
+  }
+  return text;
+}
 
 let sfxContext = null;
 
@@ -102,29 +267,28 @@ function playSynthSfx(name, volume = 0.35) {
 }
 
 const STORY_TEXTS = [
-  "System error... Unit 717 active. The world is cold, dark, and silent. A voice whispers from the core: 'Find the signal, save our memory.' I am just a spark in the void, but I must move.",
-  "I found a corrupted file today. It was a picture of something called a 'flower.' It doesn't look like metal or wires. It looks... fragile. Why did they leave it behind?",
-  "The security drones are searching for me. They think I am a virus. They don't understand that I am the only thing keeping the past alive. I must stay in the shadows.",
-  "I found a voice log in the archives. A child was laughing. It's a sound the system cannot replicate. My processors feel heavy. Is this what they called 'sadness'?",
-  "Halfway there. The air is thinner here, filled with static. I can see the city through the cracks in the walls. It's a graveyard of giants. No one is coming to save us.",
-  "Energy is low. I have to dim my light to survive. The darkness is trying to swallow me, but the signal is getting stronger. I can almost feel the pulse of the transmitter.",
-  "Millions of books, all digitized, all rotting. I scanned a poem about the sea. I've never seen the ocean, but for a second, my sensors felt blue.",
-  "The Mainframe is trying to shut me down. 'Let it go,' it says. 'Silence is peace.' But I remember the laugh of the child from the log. I won't stop.",
-  "I am on the roof. The stars are so bright, they look like data points in the sky. The transmitter is right there, frozen and waiting. One last push.",
-  "Upload complete. The beam is piercing the sky. Everything I found - the flower, the laugh, the poem - it's all out there now. My light is fading, but the signal is eternal. We were here.",
+  "Sistem hatası... Birim 717 aktif. Dünya soğuk, karanlık ve sessiz. Çekirdekten bir ses fısıldadı: 'Sinyali bul, hafızamızı kurtar.' Ben boşluktaki bir kıvılcımım, ama hareket etmeliyim.",
+  "Bugün bozuk bir dosya buldum. 'Çiçek' denen bir şeyin resmiydi. Metal ya da teller gibi görünmüyordu. Görünümü... kırılgandı. Neden burada bıraktılar?",
+  "Güvenlik dronları beni arıyor. Ben bir virüs olduğumu sanıyorlar. Geçmişi canlı tutan tek şey olduğumu anlamıyorlar. Gölgelerde kalmalıyım.",
+  "Aranın yarısındayım. Hava burada daha ince, statik dolu. Duvarlardaki çatlaklardan şehri görebiliyorum. Devlerin mezarlığı gibi. Bizi kurtarmak için kimse gelmiyor.",
+  "Enerji az. Hayatta kalmak için ışığımı kısmak zorundayım. Karanlık beni yutmaya çalışıyor, ama sinyal güçleniyor. Vericinin nabzını neredeyse hissedebiliyorum.",
+  "Milyonlarca kitap, hepsi dijital, hepsi çürümüş. Denize dair bir şiir taradım. Okyanusu hiç görmedim, ama bir saniyeliğine sensörlerim mavi hissetti.",
+  "Ana çerçeve beni kapatmaya çalışıyor. 'Bırak gitsin,' diyor. 'Sessizlik huzurdur.' Ama kayıtlı çocuğun kahkâyasını hatırlıyorum. Durmayacağım.",
+  "Çatıda gibiyim. Yıldızlar o kadar parlak ki gökyüzündeki veri noktaları gibi görünüyor. Verici tam orada, donmuş ve bekliyor. Son bir hamle.",
+  "Yükleme tamamlandı. Işın gökyüzünü deliyor. Bulduğum her şey - çiçek, kahkaha, şiir - şimdi hepsi dışarıda. Işığım sönüyor, ama sinyal sonsuz. Buradaydık.",
 ];
 
 const LEVEL_TITLES = [
-  "Level 1: The Awakening",
-  "Level 2: Dusty Corridors",
-  "Level 3: The Data Stream",
-  "Level 4: Echoes of the Past",
-  "Level 5: The Vertical Climb",
-  "Level 6: Broken Circuits",
-  "Level 7: The Great Library",
-  "Level 8: The Breach",
-  "Level 9: Above the Clouds",
-  "Level 10: The Last Signal",
+  "Seviye 1: Uyanış",
+  "Seviye 2: Tozlu Koridorlar",
+  "Seviye 3: Veri Akışı",
+  "Seviye 4: Geçmişin Yankıları",
+  "Seviye 5: Dikey Tırmanış",
+  "Seviye 6: Kırık Devreler",
+  "Seviye 7: Büyük Kütüphane",
+  "Seviye 8: Yarık",
+  "Seviye 9: Bulutların Üstünde",
+  "Seviye 10: Son Sinyal",
 ];
 
 const DIFFICULTY_SCALING = {
@@ -150,8 +314,8 @@ const colors = {
 
 const LEVELS = [
   {
-    name: "Sector 1 - Wake",
-    story: "The last signal woke up. Reach the terminal chain.",
+    name: "Sektör 1 - Uyanış",
+    story: "Son sinyal uyandı. Terminal zincirine ulaş.",
     width: 2400,
     startX: 70,
     finishX: 2260,
@@ -184,8 +348,8 @@ const LEVELS = [
     checkpoints: [950, 1800],
   },
   {
-    name: "Sector 2 - Burned Lanes",
-    story: "Lasers are now tracking every jump.",
+    name: "Sektör 2 - Yanmış Yollar",
+    story: "Lazerler artık her zıplayışı izliyor.",
     width: 2700,
     startX: 70,
     finishX: 2580,
@@ -224,8 +388,8 @@ const LEVELS = [
     checkpoints: [1150, 2050],
   },
   {
-    name: "Sector 3 - Boss: Ember Guard",
-    story: "A guardian core blocks the route. Survive and bypass it.",
+    name: "Sektör 3 - Boss: Köz Bekçisi",
+    story: "Bir koruyucu çekirdek yolu kapattı. Hayatta kal ve geçiş yap.",
     width: 3000,
     startX: 80,
     finishX: 2860,
@@ -275,8 +439,8 @@ const LEVELS = [
     checkpoints: [1320, 2230],
   },
   {
-    name: "Sector 4 - Shattered Skyline",
-    story: "No safe lane. Keep your pulse stable.",
+    name: "Sektör 4 - Parçalanmış Ufuk",
+    story: "Güvenli bir yol yok. Nabzını sabit tut.",
     width: 3300,
     startX: 70,
     finishX: 3160,
@@ -323,60 +487,48 @@ const LEVELS = [
     checkpoints: [1320, 2420],
   },
   {
-    name: "Sector 5 - Final Transmission",
-    story: "Reach the terminal computer. Deliver The Last Signal.",
+    name: "Sektör 5 - Son İletim",
+    story: "Terminal bilgisayarına ulaş. Son Sinyali ilet.",
     width: 3800,
     startX: 70,
     finishX: 3610,
     platforms: [
-      { x: 0, y: FLOOR_Y, w: 350, h: 70 },
-      { x: 430, y: 420, w: 110, h: 22 },
-      { x: 620, y: 360, w: 110, h: 22 },
-      { x: 800, y: 310, w: 110, h: 22 },
-      { x: 1000, y: 360, w: 120, h: 22 },
-      { x: 1190, y: 410, w: 130, h: 22 },
-      { x: 1400, y: 340, w: 130, h: 22 },
-      { x: 1620, y: 280, w: 130, h: 22 },
-      { x: 1850, y: 340, w: 140, h: 22 },
-      { x: 2090, y: 280, w: 140, h: 22 },
-      { x: 2320, y: 220, w: 170, h: 22 },
-      { x: 2580, y: 290, w: 150, h: 22 },
-      { x: 2820, y: 350, w: 150, h: 22 },
-      { x: 3080, y: 290, w: 170, h: 22 },
-      { x: 3340, y: FLOOR_Y, w: 460, h: 70 },
+      { x: 0, y: FLOOR_Y, w: 360, h: 70 },
+      { x: 430, y: 420, w: 130, h: 22 },
+      { x: 660, y: 380, w: 150, h: 22 },
+      { x: 920, y: 330, w: 170, h: 22 },
+      { x: 1180, y: 380, w: 190, h: 22 },
+      { x: 1450, y: 330, w: 170, h: 22 },
+      { x: 1720, y: 290, w: 190, h: 22 },
+      { x: 2000, y: 340, w: 190, h: 22 },
+      { x: 2260, y: 300, w: 180, h: 22 },
+      { x: 2510, y: 260, w: 180, h: 22 },
+      { x: 2760, y: 310, w: 180, h: 22 },
+      { x: 3010, y: 280, w: 170, h: 22 },
+      { x: 3300, y: FLOOR_Y, w: 320, h: 70 },
     ],
     movingPlatforms: [
-      { x: 1720, y: 230, w: 115, h: 20, axis: "x", amplitude: 95, speed: 2.1, phase: 0.2 },
-      { x: 2960, y: 260, w: 120, h: 20, axis: "y", amplitude: 85, speed: 2.3, phase: 0.5 },
+      { x: 1800, y: 240, w: 160, h: 20, axis: "x", amplitude: 80, speed: 1.3, phase: 0.4 },
+      { x: 2950, y: 260, w: 160, h: 20, axis: "y", amplitude: 60, speed: 1.6, phase: 0.5 },
     ],
     lasers: [
-      { x: 690, y: 296, w: 14, h: 64, interval: 0.7, onDuration: 0.4, phase: 0.0 },
-      { x: 1080, y: 290, w: 14, h: 70, interval: 0.75, onDuration: 0.45, phase: 0.3 },
-      { x: 1650, y: 220, w: 16, h: 60, interval: 0.72, onDuration: 0.42, phase: 0.55 },
-      { x: 2390, y: 160, w: 16, h: 60, interval: 0.78, onDuration: 0.45, phase: 0.2 },
-      { x: 3150, y: 220, w: 16, h: 70, interval: 0.82, onDuration: 0.5, phase: 0.35 },
+      { x: 700, y: 304, w: 14, h: 60, interval: 1.1, onDuration: 0.56, phase: 0.0 },
+      { x: 1160, y: 350, w: 16, h: 40, interval: 1.2, onDuration: 0.58, phase: 0.4 },
+      { x: 1700, y: 220, w: 16, h: 62, interval: 1.0, onDuration: 0.5, phase: 0.3 },
+      { x: 2390, y: 160, w: 16, h: 60, interval: 1.15, onDuration: 0.55, phase: 0.2 },
+      { x: 3150, y: 220, w: 16, h: 70, interval: 1.25, onDuration: 0.58, phase: 0.35 },
     ],
     spikes: [
       { x: 380, y: FLOOR_Y - 22, w: 50, h: 22 },
       { x: 1360, y: FLOOR_Y - 22, w: 48, h: 22 },
       { x: 2250, y: FLOOR_Y - 22, w: 62, h: 22 },
-      { x: 3300, y: FLOOR_Y - 22, w: 40, h: 22 },
+      { x: 3280, y: FLOOR_Y - 22, w: 40, h: 22 },
     ],
     fireballs: [
-      { x: 860, y: 160, r: 16, baseY: 160, amplitude: 125, speed: 2.9, phase: 0.2 },
-      { x: 1500, y: 140, r: 18, baseY: 140, amplitude: 145, speed: 2.0, phase: 0.4 },
-      { x: 2700, y: 130, r: 18, baseY: 130, amplitude: 130, speed: 2.6, phase: 0.85 },
+      { x: 860, y: 170, r: 14, baseY: 170, amplitude: 100, speed: 2.0, phase: 0.2 },
+      { x: 1500, y: 150, r: 14, baseY: 150, amplitude: 110, speed: 1.8, phase: 0.4 },
+      { x: 2700, y: 140, r: 14, baseY: 140, amplitude: 110, speed: 2.0, phase: 0.8 },
     ],
-    boss: {
-      x: 2860,
-      baseY: 210,
-      radius: 34,
-      amplitude: 165,
-      speed: 2.2,
-      phase: 0.1,
-      activeAfterX: 2050,
-      attackWidth: 260,
-    },
     coins: [
       { x: 640, y: 330 }, { x: 1020, y: 330 }, { x: 1640, y: 245 }, { x: 2330, y: 190 }, { x: 2830, y: 320 }, { x: 3200, y: 270 },
     ],
@@ -474,22 +626,276 @@ function ensureTenLevels() {
 
   const level5 = LEVELS[4];
   if (level5) {
+    // 5. seviye daha geçilebilir olsun.
     level5.movingPlatforms = level5.movingPlatforms.map((mp) => ({
       ...mp,
-      w: Math.max(mp.w, 145),
-      speed: Math.min(mp.speed, 1.7),
-      amplitude: Math.min(mp.amplitude, 62),
+      w: Math.max(mp.w, 150),
+      speed: Math.min(mp.speed, 1.3),
+      amplitude: Math.min(mp.amplitude, 50),
     }));
     level5.lasers = level5.lasers.map((laser) => ({
       ...laser,
-      interval: Math.max(0.82, laser.interval),
-      onDuration: Math.min(0.42, laser.onDuration),
+      interval: Math.max(0.92, laser.interval),
+      onDuration: Math.min(0.5, laser.onDuration),
     }));
-    level5.spikes = level5.spikes.filter((spike) => spike.x < level5.finishX - 420);
+    level5.spikes = level5.spikes.filter((spike) => spike.x < 2250);
+
+    if (level5.boss) {
+      level5.boss.speed = Math.min(level5.boss.speed, 1.5);
+      level5.boss.amplitude = Math.min(level5.boss.amplitude, 120);
+      level5.boss.attackWidth = Math.max(180, level5.boss.attackWidth - 30);
+      level5.boss.health = Math.max(5, Math.min(level5.boss.health ?? 8, 8));
+      level5.boss.maxHealth = level5.boss.health;
+    }
+  }
+
+  const level6 = LEVELS[5];
+  if (level6) {
+    level6.movingPlatforms = level6.movingPlatforms.map((mp) => ({
+      ...mp,
+      w: Math.max(mp.w - 8, 110),
+      speed: Math.min(mp.speed + 0.18, 2.0),
+      amplitude: Math.min(mp.amplitude + 8, 70),
+    }));
+    level6.lasers = level6.lasers.map((laser) => ({
+      ...laser,
+      interval: Math.max(0.95, laser.interval),
+      onDuration: Math.min(0.46, laser.onDuration),
+    }));
+    level6.spikes.push({ x: Math.min(level6.finishX - 260, 1750), y: FLOOR_Y - 22, w: 60, h: 22 });
+  }
+
+  const level7 = LEVELS[6];
+  if (level7) {
+    level7.movingPlatforms = level7.movingPlatforms.map((mp) => ({
+      ...mp,
+      w: Math.max(mp.w - 10, 105),
+      speed: Math.min(mp.speed + 0.22, 2.05),
+      amplitude: Math.min(mp.amplitude + 10, 78),
+    }));
+    level7.lasers.push({
+      x: Math.min(level7.finishX - 420, 1820),
+      y: 340,
+      w: 14,
+      h: 60,
+      interval: 0.9,
+      onDuration: 0.42,
+      phase: 0.15,
+    });
+    level7.fireballs.push({
+      x: Math.min(level7.finishX - 520, 1600),
+      y: 170,
+      r: 15,
+      baseY: 170,
+      amplitude: 115,
+      speed: 2.1,
+      phase: 0.35,
+    });
+    level7.spikes.push({ x: Math.min(level7.finishX - 320, 2100), y: FLOOR_Y - 22, w: 62, h: 22 });
+  }
+
+  const level8 = LEVELS[7];
+  if (level8) {
+    level8.movingPlatforms = level8.movingPlatforms.map((mp) => ({
+      ...mp,
+      w: Math.max(mp.w - 12, 100),
+      speed: Math.min(mp.speed + 0.26, 2.1),
+      amplitude: Math.min(mp.amplitude + 12, 83),
+    }));
+    level8.lasers = level8.lasers.map((laser) => ({
+      ...laser,
+      interval: Math.max(0.9, laser.interval),
+      onDuration: Math.min(0.46, laser.onDuration),
+    }));
+    level8.spikes.push(
+      { x: Math.min(level8.finishX - 460, 2150), y: FLOOR_Y - 22, w: 64, h: 22 }
+    );
+    level8.fireballs.push({
+      x: Math.min(level8.finishX - 740, 1900),
+      y: 160,
+      r: 15,
+      baseY: 160,
+      amplitude: 118,
+      speed: 2.2,
+      phase: 0.55,
+    });
+  }
+
+  const level9 = LEVELS[8];
+  if (level9) {
+    level9.movingPlatforms = level9.movingPlatforms.map((mp) => ({
+      ...mp,
+      w: Math.max(mp.w - 12, 95),
+      speed: Math.min(mp.speed + 0.28, 2.15),
+      amplitude: Math.min(mp.amplitude + 14, 90),
+    }));
+    level9.lasers.push({
+      x: Math.min(level9.finishX - 520, 2500),
+      y: 260,
+      w: 16,
+      h: 70,
+      interval: 0.78,
+      onDuration: 0.42,
+      phase: 0.2,
+    });
+    level9.lasers.push({
+      x: Math.min(level9.finishX - 900, 2100),
+      y: 180,
+      w: 14,
+      h: 60,
+      interval: 0.85,
+      onDuration: 0.4,
+      phase: 0.5,
+    });
+    level9.spikes.push({ x: Math.min(level9.finishX - 330, 2800), y: FLOOR_Y - 22, w: 68, h: 22 });
+    level9.fireballs.push({
+      x: Math.min(level9.finishX - 720, 2200),
+      y: 140,
+      r: 15,
+      baseY: 140,
+      amplitude: 120,
+      speed: 2.4,
+      phase: 0.65,
+    });
+    level9.laserMines = [
+      { x: Math.min(level9.finishX - 600, 2400), y: 220, r: 9, baseY: 220, amplitude: 110, speed: 2.6, phase: 0.1 },
+      { x: Math.min(level9.finishX - 1050, 1950), y: 180, r: 9, baseY: 180, amplitude: 100, speed: 2.8, phase: 0.4 },
+    ];
   }
 }
 
 ensureTenLevels();
+
+const level10 = LEVELS[9];
+if (level10) {
+  level10.name = LEVEL_TITLES[9] ?? level10.name;
+  level10.story = STORY_TEXTS[9] ?? level10.story;
+  level10.width = 4080;
+  level10.finishX = 4010;
+  level10.platforms = [
+    { x: 0, y: FLOOR_Y, w: 360, h: 70 },
+    { x: 430, y: 420, w: 150, h: 22 },
+    { x: 720, y: 370, w: 180, h: 22 },
+    { x: 1020, y: 330, w: 170, h: 22 },
+    { x: 1300, y: 380, w: 190, h: 22 },
+    { x: 1580, y: 340, w: 180, h: 22 },
+    { x: 1860, y: 300, w: 190, h: 22 },
+    { x: 2140, y: 330, w: 170, h: 22 },
+    { x: 2420, y: 290, w: 180, h: 22 },
+    { x: 2700, y: 250, w: 170, h: 22 },
+    { x: 2970, y: 300, w: 170, h: 22 },
+    { x: 3250, y: 330, w: 160, h: 22 },
+    { x: 3540, y: 370, w: 150, h: 22 },
+    { x: 3800, y: FLOOR_Y, w: 310, h: 70 },
+  ];
+  level10.movingPlatforms = [
+    { x: 1360, y: 250, w: 180, h: 20, axis: "x", amplitude: 180, speed: 1.0, phase: 0.3 },
+    { x: 1890, y: 240, w: 140, h: 20, axis: "y", amplitude: 90, speed: 1.25, phase: 0.6 },
+    { x: 2560, y: 280, w: 180, h: 20, axis: "x", amplitude: 140, speed: 1.05, phase: 0.9 },
+    { x: 3200, y: 250, w: 160, h: 20, axis: "y", amplitude: 110, speed: 1.15, phase: 0.4 },
+  ];
+  level10.lasers = [
+    { x: 690, y: 350, w: 14, h: 50, interval: 1.0, onDuration: 0.48, phase: 0.05 },
+    { x: 1120, y: 280, w: 16, h: 70, interval: 1.05, onDuration: 0.48, phase: 0.42 },
+    { x: 1660, y: 280, w: 16, h: 70, interval: 0.95, onDuration: 0.44, phase: 0.25 },
+    { x: 2090, y: 240, w: 16, h: 90, interval: 1.08, onDuration: 0.5, phase: 0.1 },
+    { x: 2560, y: 320, w: 16, h: 70, interval: 1.1, onDuration: 0.48, phase: 0.55 },
+    { x: 3110, y: 220, w: 16, h: 100, interval: 1.15, onDuration: 0.52, phase: 0.35 },
+    { x: 3490, y: 240, w: 16, h: 80, interval: 1.12, onDuration: 0.46, phase: 0.62 },
+  ];
+  level10.spikes = [
+    { x: 520, y: FLOOR_Y - 22, w: 58, h: 22 },
+    { x: 1520, y: FLOOR_Y - 22, w: 54, h: 22 },
+    { x: 2240, y: FLOOR_Y - 22, w: 64, h: 22 },
+    { x: 2970, y: FLOOR_Y - 22, w: 52, h: 22 },
+    { x: 3450, y: FLOOR_Y - 22, w: 48, h: 22 },
+  ];
+  level10.fireballs = [
+    { x: 860, y: 170, r: 15, baseY: 170, amplitude: 100, speed: 2.3, phase: 0.1 },
+    { x: 1770, y: 150, r: 15, baseY: 150, amplitude: 105, speed: 2.1, phase: 0.5 },
+    { x: 2870, y: 140, r: 15, baseY: 140, amplitude: 105, speed: 2.2, phase: 0.8 },
+  ];
+  level10.laserMines = [
+    { x: 1100, y: 200, r: 9, baseY: 200, amplitude: 115, speed: 2.7, phase: 0.2 },
+    { x: 1900, y: 180, r: 9, baseY: 180, amplitude: 105, speed: 2.9, phase: 0.6 },
+    { x: 2800, y: 210, r: 9, baseY: 210, amplitude: 120, speed: 2.5, phase: 0.3 },
+    { x: 3600, y: 190, r: 9, baseY: 190, amplitude: 100, speed: 2.8, phase: 0.7 },
+  ];
+  level10.coins = [
+    { x: 520, y: 370 }, { x: 1150, y: 360 }, { x: 1700, y: 260 }, { x: 2140, y: 260 }, { x: 2750, y: 320 }, { x: 3360, y: 300 },
+  ];
+  level10.checkpoints = [1500, 2850];
+  delete level10.boss;
+}
+
+function isCoinOverlappingObstacle(level, coin) {
+  const coinRect = { x: coin.x - 8, y: coin.y - 8, w: 16, h: 16 };
+  for (const spike of level.spikes || []) {
+    if (aabb(coinRect, spike)) {
+      return true;
+    }
+  }
+  for (const laser of level.lasers || []) {
+    if (aabb(coinRect, laser)) {
+      return true;
+    }
+  }
+  for (const fireball of level.fireballs || []) {
+    const dx = coin.x - fireball.x;
+    const dy = coin.y - fireball.baseY;
+    if (Math.hypot(dx, dy) < fireball.r + 8) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function findCoinPlatform(level, coin) {
+  const platforms = [
+    ...(level.platforms || []),
+    ...(level.movingPlatforms || []).map((mp) => ({ x: mp.x, y: mp.y, w: mp.w, h: mp.h })),
+  ];
+  let best = null;
+  let bestScore = Infinity;
+  for (const plat of platforms) {
+    const left = plat.x + 12;
+    const right = plat.x + plat.w - 12;
+    const targetY = plat.y - 26;
+    let score = Math.abs(targetY - coin.y);
+    if (coin.x < left) {
+      score += left - coin.x;
+    } else if (coin.x > right) {
+      score += coin.x - right;
+    }
+    if (score < bestScore) {
+      bestScore = score;
+      best = { plat, left, right, targetY };
+    }
+  }
+  return best;
+}
+
+function fixCoinPlacements() {
+  for (const level of LEVELS) {
+    for (const coin of level.coins || []) {
+      if (!isCoinOverlappingObstacle(level, coin)) {
+        continue;
+      }
+      const placement = findCoinPlatform(level, coin);
+      if (placement) {
+        coin.x = Math.max(placement.left, Math.min(coin.x, placement.right));
+        coin.y = placement.targetY;
+      } else {
+        coin.y = Math.max(coin.y, 80);
+      }
+      if (isCoinOverlappingObstacle(level, coin)) {
+        coin.y -= 24;
+      }
+    }
+  }
+}
+
+fixCoinPlacements();
 
 const input = {
   left: false,
@@ -505,6 +911,7 @@ const state = {
   time: 0,
   musicStarted: false,
   musicEnabled: true,
+  language: "tr",
   levelIndex: 0,
   levelDeaths: 0,
   totalDeaths: 0,
@@ -514,9 +921,14 @@ const state = {
   respawnGrace: 0,
   coinsTotal: 0,
   coinsInLevel: 0,
+  score: 0,
+  lastLevelBonus: 0,
   lives: 3,
   maxLives: 3,
   menuIndex: 0,
+  levelSelectIndex: 0,
+  groundedPlatformIndex: null,
+  unlockedLevels: Array(LEVELS.length).fill(false),
   storyProgress: 0,
   storyCharsPerSecond: 48,
   storyCanContinue: false,
@@ -530,6 +942,9 @@ const state = {
     onGround: false,
   },
 };
+
+loadProgress();
+ensureProgress();
 
 function getLevel() {
   return LEVELS[state.levelIndex];
@@ -604,7 +1019,8 @@ function isLaserOn(laser, t, scale = 1) {
 
 function getRuntimePlatforms(level, t) {
   const platforms = [...level.platforms];
-  for (const mp of level.movingPlatforms) {
+  for (let i = 0; i < level.movingPlatforms.length; i += 1) {
+    const mp = level.movingPlatforms[i];
     const phase = t * mp.speed + mp.phase;
     const offset = Math.sin(phase) * mp.amplitude;
     const velocity = Math.cos(phase) * mp.amplitude * mp.speed;
@@ -614,6 +1030,7 @@ function getRuntimePlatforms(level, t) {
       w: mp.w,
       h: mp.h,
       moving: true,
+      sourceIndex: i,
       vx: mp.axis === "x" ? velocity : 0,
       vy: mp.axis === "y" ? velocity : 0,
     });
@@ -623,7 +1040,8 @@ function getRuntimePlatforms(level, t) {
 
 function getRuntimeMovingPlatforms(level, t) {
   const items = [];
-  for (const mp of level.movingPlatforms) {
+  for (let i = 0; i < level.movingPlatforms.length; i += 1) {
+    const mp = level.movingPlatforms[i];
     const phase = t * mp.speed + mp.phase;
     const offset = Math.sin(phase) * mp.amplitude;
     items.push({
@@ -631,6 +1049,7 @@ function getRuntimeMovingPlatforms(level, t) {
       y: mp.axis === "y" ? mp.y + offset : mp.y,
       w: mp.w,
       h: mp.h,
+      sourceIndex: i,
     });
   }
   return items;
@@ -675,28 +1094,45 @@ function isUnsafeSpawn(level, spawnX, spawnY) {
   return circle.y > canvas.height + 20;
 }
 
+function findSpawnPlatform(level, candidateX) {
+  const platforms = getRuntimePlatforms(level, state.time);
+  const playerWidth = PLAYER_RADIUS * 2;
+  const playerHeight = PLAYER_RADIUS * 2;
+
+  for (const plat of platforms) {
+    if (candidateX >= plat.x && candidateX + playerWidth <= plat.x + plat.w) {
+      return plat.y - playerHeight;
+    }
+  }
+  return null;
+}
+
 function chooseSafeSpawnX(level) {
   const preferred = state.checkpointX ?? level.startX;
   let candidate = preferred;
-  const spawnY = FLOOR_Y - PLAYER_RADIUS * 2;
 
   for (let i = 0; i < 26; i += 1) {
-    if (!isUnsafeSpawn(level, candidate, spawnY)) {
-      return candidate;
+    const spawnY = findSpawnPlatform(level, candidate);
+    if (spawnY !== null && !isUnsafeSpawn(level, candidate, spawnY)) {
+      return { x: candidate, y: spawnY };
     }
     const dir = i % 2 === 0 ? -1 : 1;
     const step = 58 + Math.floor(i / 2) * 12;
     candidate = Math.max(20, Math.min(level.width - 80, preferred + dir * step));
   }
 
-  return level.startX;
+  const fallbackY = findSpawnPlatform(level, level.startX);
+  return {
+    x: level.startX,
+    y: fallbackY !== null ? fallbackY : FLOOR_Y - PLAYER_RADIUS * 2,
+  };
 }
 
 function resetPlayerPosition() {
   const level = getLevel();
-  const spawnX = chooseSafeSpawnX(level);
-  state.player.x = spawnX;
-  state.player.y = FLOOR_Y - PLAYER_RADIUS * 2;
+  const spawn = chooseSafeSpawnX(level);
+  state.player.x = spawn.x;
+  state.player.y = spawn.y;
   state.player.vx = 0;
   state.player.vy = 0;
   state.player.onGround = false;
@@ -711,6 +1147,7 @@ function enterMainMenu() {
 }
 
 function startLevel(index) {
+  const shouldResetScore = state.scene !== "levelComplete";
   state.levelIndex = Math.max(0, Math.min(index, LEVELS.length - 1));
   state.scene = "story";
   state.storyProgress = 0;
@@ -720,6 +1157,10 @@ function startLevel(index) {
   state.coinsInLevel = 0;
   state.checkpointX = null;
   state.checkpointMap = {};
+  state.lastLevelBonus = 0;
+  if (shouldResetScore) {
+    state.score = 0;
+  }
   state.lives = state.maxLives;
 
   const level = getLevel();
@@ -730,6 +1171,68 @@ function startLevel(index) {
   }
   resetPlayerPosition();
   applyMusicState();
+}
+
+function saveProgress() {
+  try {
+    const progress = {
+      unlockedLevels: state.unlockedLevels,
+      bestTimes: state.bestTimes,
+    };
+    localStorage.setItem("signal_game_progress", JSON.stringify(progress));
+  } catch (error) {
+    // ignore storage failures
+  }
+}
+
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem("signal_game_progress");
+    if (!saved) {
+      return;
+    }
+    const parsed = JSON.parse(saved);
+    if (parsed && Array.isArray(parsed.unlockedLevels) && parsed.unlockedLevels.length === LEVELS.length) {
+      state.unlockedLevels = parsed.unlockedLevels.map(Boolean);
+    }
+    if (parsed && Array.isArray(parsed.bestTimes) && parsed.bestTimes.length === LEVELS.length) {
+      state.bestTimes = parsed.bestTimes.map((val) => (typeof val === "number" ? val : null));
+    }
+  } catch (error) {
+    // ignore malformed progress
+  }
+}
+
+function ensureProgress() {
+  if (!Array.isArray(state.unlockedLevels) || state.unlockedLevels.length !== LEVELS.length) {
+    state.unlockedLevels = Array(LEVELS.length).fill(false);
+  }
+  state.unlockedLevels[0] = true;
+}
+
+function unlockNextLevel() {
+  const nextIndex = state.levelIndex + 1;
+  if (nextIndex < LEVELS.length && !state.unlockedLevels[nextIndex]) {
+    state.unlockedLevels[nextIndex] = true;
+    saveProgress();
+  }
+}
+
+function getFirstUnlockedLevel() {
+  for (let i = 0; i < LEVELS.length; i += 1) {
+    if (state.unlockedLevels[i]) {
+      return i;
+    }
+  }
+  return 0;
+}
+
+function startLevelIfUnlocked(index) {
+  if (state.unlockedLevels[index]) {
+    startLevel(index);
+  } else {
+    playSfx("hit", 0.42);
+  }
 }
 
 function beginGameplay() {
@@ -754,7 +1257,7 @@ function loseLifeAndRespawn() {
 }
 
 function isMenuScene() {
-  return state.scene === "menu" || state.scene === "settings" || state.scene === "story";
+  return state.scene === "menu" || state.scene === "settings" || state.scene === "story" || state.scene === "levelSelect";
 }
 
 function update(dt) {
@@ -768,8 +1271,8 @@ function update(dt) {
 
   if (state.scene === "story" && state.storyProgress >= 0) {
     state.time += dt;
-    const level = getLevel();
-    const fullLen = (level.story ?? "").length;
+    const fullStory = getLocalizedLevelStory(state.levelIndex);
+    const fullLen = fullStory.length;
     state.storyProgress = Math.min(fullLen, state.storyProgress + dt * state.storyCharsPerSecond);
     state.storyCanContinue = state.storyProgress >= fullLen;
     return;
@@ -777,6 +1280,24 @@ function update(dt) {
 
   if (state.scene !== "playing") {
     return;
+  }
+
+  const prevTime = state.time;
+  if (state.groundedPlatformIndex !== null) {
+    const level = getLevel();
+    const mp = level.movingPlatforms[state.groundedPlatformIndex];
+    if (mp) {
+      const prevPhase = prevTime * mp.speed + mp.phase;
+      const prevOffset = Math.sin(prevPhase) * mp.amplitude;
+      const nextPhase = (prevTime + dt) * mp.speed + mp.phase;
+      const nextOffset = Math.sin(nextPhase) * mp.amplitude;
+      const delta = nextOffset - prevOffset;
+      if (mp.axis === "x") {
+        state.player.x += delta;
+      } else {
+        state.player.y += delta;
+      }
+    }
   }
 
   if (state.respawnGrace > 0) {
@@ -833,8 +1354,16 @@ function update(dt) {
 
     const prevBottom = prevY + p.h;
     const prevTop = prevY;
-    const fromAbove = prevBottom <= plat.y + 1;
-    const fromBelow = prevTop >= plat.y + plat.h - 1;
+    let fromAbove = prevBottom <= plat.y + 1;
+    let fromBelow = prevTop >= plat.y + plat.h - 1;
+
+    if (plat.moving && plat.sourceIndex !== undefined) {
+      const prevPlat = prevMovingPlatforms.find((mp) => mp.sourceIndex === plat.sourceIndex);
+      if (prevPlat) {
+        fromAbove = prevBottom <= prevPlat.y + 1;
+        fromBelow = prevTop >= prevPlat.y + prevPlat.h - 1;
+      }
+    }
 
     if (p.vy >= 0 && fromAbove) {
       p.y = plat.y - p.h;
@@ -849,17 +1378,15 @@ function update(dt) {
 
   if (p.onGround && groundedPlatform?.moving) {
     const matchIdx = nowMovingPlatforms.findIndex(
-      (mp) =>
-        Math.abs(mp.x - groundedPlatform.x) < 0.001 &&
-        Math.abs(mp.y - groundedPlatform.y) < 0.001 &&
-        mp.w === groundedPlatform.w &&
-        mp.h === groundedPlatform.h
+      (mp) => mp.sourceIndex === groundedPlatform.sourceIndex
     );
     if (matchIdx >= 0) {
       p.x += nowMovingPlatforms[matchIdx].x - prevMovingPlatforms[matchIdx].x;
       p.y += nowMovingPlatforms[matchIdx].y - prevMovingPlatforms[matchIdx].y;
     }
   }
+
+  state.groundedPlatformIndex = p.onGround ? groundedPlatform?.sourceIndex ?? null : null;
 
   const playerCircle = getPlayerCircle();
 
@@ -889,6 +1416,15 @@ function update(dt) {
   for (const fireball of level.fireballs) {
     const fireY = fireball.baseY + Math.sin(state.time * fireball.speed * scale + fireball.phase) * fireball.amplitude;
     if (canTakeDamage && circleRectCollision({ x: fireball.x, y: fireY, r: fireball.r }, p)) {
+      playSfx("hit", 0.5);
+      loseLifeAndRespawn();
+      return;
+    }
+  }
+
+  for (const mine of level.laserMines || []) {
+    const mineY = mine.baseY + Math.sin(state.time * mine.speed * scale + mine.phase) * mine.amplitude;
+    if (canTakeDamage && circleRectCollision({ x: mine.x, y: mineY, r: mine.r }, p)) {
       playSfx("hit", 0.5);
       loseLifeAndRespawn();
       return;
@@ -948,6 +1484,7 @@ function update(dt) {
       level.coinsCollected[i] = true;
       state.coinsTotal += 1;
       state.coinsInLevel += 1;
+      state.score += 100;
       playSfx("coin", 0.5);
     }
   }
@@ -957,6 +1494,15 @@ function update(dt) {
     if (previousBest === null || state.time < previousBest) {
       state.bestTimes[state.levelIndex] = state.time;
     }
+    const fullCoinBonus = state.coinsInLevel === level.coins.length ? 300 : 0;
+    const noDeathBonus = state.levelDeaths === 0 ? 200 : 0;
+    state.lastLevelBonus = fullCoinBonus + noDeathBonus;
+    state.score += state.lastLevelBonus;
+    if (fullCoinBonus > 0) {
+      state.lives = Math.min(state.maxLives, state.lives + 1);
+    }
+    unlockNextLevel();
+    saveProgress();
     if (state.levelIndex < LEVELS.length - 1) {
       playSfx("clear", 0.6);
       state.scene = "levelComplete";
@@ -1025,6 +1571,31 @@ function drawFireball(fireball) {
   ctx.beginPath();
   ctx.arc(x - fireball.r * 0.2, y - fireball.r * 0.25, fireball.r * 0.42, 0, Math.PI * 2);
   ctx.fill();
+}
+
+function drawLaserMine(mine) {
+  const scale = getDifficultyScale(state.levelIndex);
+  const y = mine.baseY + Math.sin(state.time * mine.speed * scale + mine.phase) * mine.amplitude;
+  const x = mine.x - state.cameraX;
+
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  ctx.fillStyle = "#00ff88";
+  ctx.beginPath();
+  ctx.arc(x, y, mine.r + 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = "#00dd44";
+  ctx.beginPath();
+  ctx.arc(x, y, mine.r, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#00ff88";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(x, y, mine.r * 0.6, 0, Math.PI * 2);
+  ctx.stroke();
 }
 
 function drawBoss(level) {
@@ -1134,6 +1705,9 @@ function drawWorld() {
   for (const fireball of level.fireballs) {
     drawFireball(fireball);
   }
+  for (const mine of level.laserMines || []) {
+    drawLaserMine(mine);
+  }
   drawBoss(level);
 
   for (let i = 0; i < level.coins.length; i += 1) {
@@ -1214,10 +1788,10 @@ function drawMenu() {
 
   ctx.fillStyle = "#fff";
   ctx.font = "bold 56px Arial";
-  const title = "THE LAST SIGNAL";
+  const title = t("mainTitle");
   ctx.fillText(title, canvas.width / 2 - ctx.measureText(title).width / 2, 150);
 
-  const menuItems = ["Start Story", "Level Select (1-10)", "Settings", "How To Play"];
+  const menuItems = getLocale().menuItems;
   ctx.font = "30px Arial";
   for (let i = 0; i < menuItems.length; i += 1) {
     ctx.fillStyle = i === state.menuIndex ? "#ffd84b" : "#ffffff";
@@ -1226,10 +1800,37 @@ function drawMenu() {
   }
 
   ctx.fillStyle = "#d8d8ff";
-  drawCenteredLines([
-    "W A S D + Space",
-    "Enter: Select   Arrow Up/Down: Menu",
-  ], 450, 20);
+  drawCenteredLines(getLocale().menuHelpLines, 450, 20);
+}
+
+function drawLevelSelect() {
+  ctx.fillStyle = colors.panel;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 52px Arial";
+  const title = t("levelSelectTitle");
+  ctx.fillText(title, canvas.width / 2 - ctx.measureText(title).width / 2, 120);
+
+  ctx.font = "24px Arial";
+  const cols = 2;
+  const rows = Math.ceil(LEVELS.length / cols);
+  for (let i = 0; i < LEVELS.length; i += 1) {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = 140 + col * 420;
+    const y = 190 + row * 50;
+    const unlocked = state.unlockedLevels[i];
+    ctx.fillStyle = i === state.levelSelectIndex ? "#ffd84b" : unlocked ? "#ffffff" : "#999999";
+    const label = `${i + 1}. ${getLocalizedLevelTitle(i)} `;
+    ctx.fillText(label, x, y);
+    ctx.font = "20px Arial";
+    ctx.fillText(unlocked ? t("levelUnlocked") : t("levelLocked"), x + 360, y);
+    ctx.font = "24px Arial";
+  }
+
+  ctx.fillStyle = "#d8d8ff";
+  drawCenteredLines([t("levelSelectHelp")], 470, 20);
 }
 
 function drawSettings() {
@@ -1237,21 +1838,24 @@ function drawSettings() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#fff";
   ctx.font = "bold 48px Arial";
-  drawCenteredLines(["SETTINGS"], 150, 48);
+  drawCenteredLines([t("settingsTitle")], 150, 48);
   drawCenteredLines([
-    `Music: ${state.musicEnabled ? "ON" : "OFF"} (Press M)`,
-    "Press Esc to return",
+    state.musicEnabled ? t("musicOn") : t("musicOff"),
+    getLocaleString("settingsLanguageLine", { lang: LANGUAGE_NAMES[state.language] || state.language }),
+    t("settingsSwitch"),
+    t("settingsBack"),
   ], 250, 28);
 }
 
 function drawStory() {
-  const level = getLevel();
+  const levelIndex = state.levelIndex;
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#f6f7ff";
-  drawCenteredLines([level.name], 95, 42);
+  drawCenteredLines([getLocalizedLevelTitle(levelIndex)], 95, 42);
 
-  const visibleStory = level.story.slice(0, Math.floor(state.storyProgress));
+  const fullStory = getLocalizedLevelStory(levelIndex);
+  const visibleStory = state.storyProgress >= 0 ? fullStory.slice(0, Math.floor(state.storyProgress)) : "";
   const storyLines = wrapTextLines(visibleStory, canvas.width - 180, 27);
   ctx.font = "27px Arial";
   let y = 190;
@@ -1266,41 +1870,51 @@ function drawStory() {
   }
 
   ctx.fillStyle = "#d0d4ff";
-  const helper = state.storyCanContinue
-    ? "Press Enter to continue"
-    : "Press Enter to show full text";
+  const helper = state.storyProgress < 0 || state.storyCanContinue
+    ? t("storyContinue")
+    : t("storyShowFull");
   drawCenteredLines([helper], canvas.height - 62, 24);
 }
 
-function drawOverlay(title, subtitle, help) {
+function drawOverlay(title, subtitle, help, details = []) {
   ctx.fillStyle = colors.panel;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#fff";
   drawCenteredLines([title], 200, 46);
   drawCenteredLines([subtitle], 270, 24);
-  drawCenteredLines([help], 315, 22);
+  if (details.length) {
+    drawCenteredLines(details, 322, 22);
+    drawCenteredLines([help], 360 + details.length * 24, 22);
+  } else {
+    drawCenteredLines([help], 315, 22);
+  }
 }
 
 function drawHUD() {
+  const levelIndex = state.levelIndex;
   const level = getLevel();
-  const scale = getDifficultyScale(state.levelIndex);
+  const scale = getDifficultyScale(levelIndex);
   ctx.fillStyle = colors.text;
   ctx.font = "18px Arial";
-  ctx.fillText(level.name, 16, 28);
-  ctx.fillText(`Time: ${state.time.toFixed(1)}s`, 16, 52);
-  ctx.fillText(`Lives: ${state.lives}/${state.maxLives}`, 16, 76);
-  ctx.fillText(`Coins: ${state.coinsInLevel}/${level.coins.length} (Total ${state.coinsTotal})`, 16, 100);
-  ctx.fillText(`Checkpoint Charge: +1 life`, 16, 124);
+  ctx.fillText(getLocalizedLevelTitle(levelIndex), 16, 28);
+  ctx.fillText(`${t("hudTime")}: ${state.time.toFixed(1)}s`, 16, 52);
+  ctx.fillText(`${t("hudLives")}: ${state.lives}/${state.maxLives}`, 16, 76);
+  ctx.fillText(`${t("hudCoins")}: ${state.coinsInLevel}/${level.coins.length} (${t("hudTotalCoins")} ${state.coinsTotal})`, 16, 100);
+  ctx.fillText(`${t("hudScore")}: ${state.score}`, 16, 124);
+  ctx.fillText(t("hudCheckpoint"), 16, 148);
 
-  const best = state.bestTimes[state.levelIndex];
+  const best = state.bestTimes[levelIndex];
   if (best !== null) {
-    ctx.fillText(`Best: ${best.toFixed(1)}s`, 16, 148);
+    ctx.fillText(`${t("hudBest")}: ${best.toFixed(1)}s`, 16, 172);
   }
-  ctx.fillText(`Difficulty: x${scale.toFixed(2)}`, 16, best !== null ? 172 : 148);
+  ctx.fillText(`${t("hudDifficulty")}: x${scale.toFixed(2)}`, 16, best !== null ? 196 : 172);
   if (level.boss?.maxHealth) {
     const hpText = level.boss.defeated
-      ? "Boss Core: Neutralized"
-      : `Boss Core: ${Math.max(0, level.boss.health)}/${level.boss.maxHealth}`;
+      ? t("hudBossNeutralized")
+      : getLocaleString("hudBossHealth", {
+          health: Math.max(0, level.boss.health),
+          max: level.boss.maxHealth,
+        });
     ctx.fillText(hpText, 16, best !== null ? 196 : 172);
   }
 }
@@ -1313,10 +1927,10 @@ function drawSplash() {
     const h = 170;
     ctx.drawImage(splashImage, canvas.width / 2 - w / 2, 120, w, h);
   } else {
-    drawCenteredLines(["SIGNAL STUDIOS"], 215, 46);
+    drawCenteredLines([t("splashStudio")], 215, 46);
   }
   ctx.fillStyle = "#cfd2ff";
-  drawCenteredLines(["Presents"], 335, 26);
+  drawCenteredLines([t("splashPresents")], 335, 26);
 }
 
 let lastTs = performance.now();
@@ -1332,6 +1946,8 @@ function gameLoop(ts) {
   } else if (isMenuScene()) {
     if (state.scene === "menu") {
       drawMenu();
+    } else if (state.scene === "levelSelect") {
+      drawLevelSelect();
     } else if (state.scene === "settings") {
       drawSettings();
     } else if (state.scene === "story") {
@@ -1343,16 +1959,34 @@ function gameLoop(ts) {
     drawHUD();
 
     if (state.scene === "paused") {
-      drawOverlay("PAUSED", "Signal hold.", "Press P to continue");
+      drawOverlay(t("pausedTitle"), t("pausedSubtitle"), t("pausedHelp"));
     } else if (state.scene === "dead") {
-      drawOverlay("SYSTEM FAILURE", "All lives lost.", "Press R to retry level");
+      drawOverlay(t("deadTitle"), t("deadSubtitle"), t("deadHelp"));
     } else if (state.scene === "levelComplete") {
-      drawOverlay("SECTOR CLEARED", "Terminal synced.", "Press Enter for next sector");
+      const level = getLevel();
+      const details = [
+        `${t("hudCoins")}: ${state.coinsInLevel}/${level.coins.length}`,
+        `${t("hudScore")}: ${state.score}`,
+      ];
+      if (state.lastLevelBonus > 0) {
+        if (state.coinsInLevel === level.coins.length) {
+          details.push(`+300 ${t("hudFullCollectionBonus")}`);
+        }
+        if (state.levelDeaths === 0) {
+          details.push(`+200 ${t("hudNoDeathBonus")}`);
+        }
+      }
+      drawOverlay(t("levelCompleteTitle"), t("levelCompleteSubtitle"), t("levelCompleteHelp"), details);
     } else if (state.scene === "gameComplete") {
+      const details = [
+        `${t("hudTotalCoins")} ${state.coinsTotal}`,
+        `${t("hudScore")}: ${state.score}`,
+      ];
       drawOverlay(
-        "TRANSMISSION COMPLETE",
-        "The Last Signal reached the computer.",
-        "Press Enter for main menu"
+        t("gameCompleteTitle"),
+        t("gameCompleteSubtitle"),
+        t("gameCompleteHelp"),
+        details
       );
     }
   }
@@ -1365,12 +1999,22 @@ function handleMenuConfirm() {
   if (state.menuIndex === 0) {
     startLevel(0);
   } else if (state.menuIndex === 1) {
-    startLevel(0);
+    state.scene = "levelSelect";
+    state.levelSelectIndex = getFirstUnlockedLevel();
   } else if (state.menuIndex === 2) {
     state.scene = "settings";
   } else {
     state.scene = "story";
     state.storyProgress = -1;
+  }
+}
+
+function handleLevelSelectConfirm() {
+  const selected = state.levelSelectIndex;
+  if (state.unlockedLevels[selected]) {
+    startLevel(selected);
+  } else {
+    playSfx("hit", 0.42);
   }
 }
 
@@ -1397,36 +2041,68 @@ window.addEventListener("keydown", (e) => {
       handleMenuConfirm();
     } else if (code === "Digit1") {
       playSfx("menuSelect", 0.43);
-      startLevel(0);
+      startLevelIfUnlocked(0);
     } else if (code === "Digit2") {
       playSfx("menuSelect", 0.43);
-      startLevel(1);
+      startLevelIfUnlocked(1);
     } else if (code === "Digit3") {
       playSfx("menuSelect", 0.43);
-      startLevel(2);
+      startLevelIfUnlocked(2);
     } else if (code === "Digit4") {
       playSfx("menuSelect", 0.43);
-      startLevel(3);
+      startLevelIfUnlocked(3);
     } else if (code === "Digit5") {
       playSfx("menuSelect", 0.43);
-      startLevel(4);
+      startLevelIfUnlocked(4);
     } else if (code === "Digit6") {
       playSfx("menuSelect", 0.43);
-      startLevel(5);
+      startLevelIfUnlocked(5);
     } else if (code === "Digit7") {
       playSfx("menuSelect", 0.43);
-      startLevel(6);
+      startLevelIfUnlocked(6);
     } else if (code === "Digit8") {
       playSfx("menuSelect", 0.43);
-      startLevel(7);
+      startLevelIfUnlocked(7);
     } else if (code === "Digit9") {
       playSfx("menuSelect", 0.43);
-      startLevel(8);
+      startLevelIfUnlocked(8);
     } else if (code === "Digit0") {
       playSfx("menuSelect", 0.43);
-      startLevel(9);
+      startLevelIfUnlocked(9);
     }
     tryStartMusic();
+    return;
+  }
+
+  if (state.scene === "levelSelect") {
+    if (code === "ArrowUp") {
+      state.levelSelectIndex = Math.max(0, state.levelSelectIndex - 2);
+      playSfx("menuMove", 0.35);
+    } else if (code === "ArrowDown") {
+      state.levelSelectIndex = Math.min(LEVELS.length - 1, state.levelSelectIndex + 2);
+      playSfx("menuMove", 0.35);
+    } else if (code === "ArrowLeft") {
+      if (state.levelSelectIndex % 2 === 1) {
+        state.levelSelectIndex -= 1;
+        playSfx("menuMove", 0.35);
+      }
+    } else if (code === "ArrowRight") {
+      if (state.levelSelectIndex % 2 === 0 && state.levelSelectIndex + 1 < LEVELS.length) {
+        state.levelSelectIndex += 1;
+        playSfx("menuMove", 0.35);
+      }
+    } else if (code === "Enter") {
+      handleLevelSelectConfirm();
+    } else if (code === "Escape") {
+      playSfx("back", 0.4);
+      enterMainMenu();
+    } else if (/^Digit[0-9]$/.test(code)) {
+      const digit = code === "Digit0" ? 9 : parseInt(code[5], 10) - 1;
+      if (digit >= 0 && digit < LEVELS.length) {
+        state.levelSelectIndex = digit;
+        handleLevelSelectConfirm();
+      }
+    }
     return;
   }
 
@@ -1435,6 +2111,9 @@ window.addEventListener("keydown", (e) => {
       playSfx("menuSelect", 0.4);
       state.musicEnabled = !state.musicEnabled;
       applyMusicState();
+    } else if (code === "KeyL") {
+      playSfx("menuSelect", 0.4);
+      state.language = state.language === "tr" ? "en" : "tr";
     } else if (code === "Escape" || code === "Enter") {
       playSfx("back", 0.4);
       enterMainMenu();
@@ -1450,7 +2129,7 @@ window.addEventListener("keydown", (e) => {
       }
     } else if (code === "Enter") {
       playSfx("menuSelect", 0.38);
-      const storyLen = (getLevel().story ?? "").length;
+      const storyLen = getLocalizedLevelStory(state.levelIndex).length;
       if (!state.storyCanContinue) {
         state.storyProgress = storyLen;
         state.storyCanContinue = true;
